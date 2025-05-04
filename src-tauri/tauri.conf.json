@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "off-grid",
-        "width": 800,
-        "height": 600
+        "title": "OffGrid",
+        "width": 1400,
+        "minWidth": 1000,
+        "height": 1000,
+        "minHeight": 800
       }
     ],
     "security": {
