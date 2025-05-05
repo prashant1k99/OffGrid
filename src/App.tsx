@@ -1,15 +1,16 @@
 import "./App.css";
 import { ThemeProvider } from "./components/theme-provider";
-import { ModeToggle } from "./components/theme-toggle";
+import {
+  RouterProvider,
+} from "react-router";
+import router from "./routers.tsx"
 
 function App() {
   return (
     <ThemeProvider defaultTheme="light">
-      <main className="container">
-        <p>Hello world</p>
-        <br />
-        <ModeToggle />
-      </main>
+      <div className="min-h-dvh max-w-dvw overflow-x-hidden">
+        <RouterProvider router={router} />
+      </div>
     </ThemeProvider>
   );
 }

@@ -14,9 +14,9 @@
       {
         "title": "OffGrid",
         "width": 1400,
-        "minWidth": 1000,
+        "minWidth": 550,
         "height": 1000,
-        "minHeight": 800
+        "minHeight": 750
       }
     ],
     "security": {
