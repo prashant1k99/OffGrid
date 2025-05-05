@@ -3,6 +3,7 @@ import { ChevronsLeft, MenuIcon } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
+import Logo from "./svg/Logo";
 
 const Navigation = () => {
   const location = useLocation();
@@ -97,7 +98,7 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar bg-secondary overflow-y-auto relative flex w-60 flex-col z-[99999]",
+          "group/sidebar bg-primary-foreground overflow-y-auto relative flex w-60 flex-col z-[99999]",
           isResetting && "transition-all ease-in-out duration-300",
           isTablet && "w-0"
         )}
@@ -106,17 +107,14 @@ const Navigation = () => {
           role="button"
           onClick={collapse}
           className={cn(
-            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:bg-gray-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
+            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 hover:dark:bg-gray-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
             isTablet && "opacity-100"
           )}
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
-        <div>
-          <p>Action Items</p>
-        </div>
-        <div>
-          <p>Documents</p>
+        <div className="p-2 py-4">
+          <Logo />
         </div>
         <div
           onMouseDown={handleMouseDown}
