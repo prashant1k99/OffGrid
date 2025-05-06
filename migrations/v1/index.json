@@ -2,5 +2,13 @@
   {
     "id": "0001_v1_documents",
     "url": "https://raw.githubusercontent.com/prashant1k99/OffGrid/refs/heads/main/migrations/v1/0001_documents.sql"
+  },
+  {
+    "id": "0002_v1_documents",
+    "url": "https://raw.githubusercontent.com/prashant1k99/OffGrid/refs/heads/main/migrations/v1/0002_documents.sql"
+  },
+  {
+    "id": "0003_v1_documents",
+    "url": "https://raw.githubusercontent.com/prashant1k99/OffGrid/refs/heads/main/migrations/v1/0003_documents.sql"
   }
 ]
