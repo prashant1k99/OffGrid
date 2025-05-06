@@ -1,9 +1,0 @@
-CREATE TABLE documents (
-  id TEXT PRIMARY KEY DEFAULT (uuid()),
-  title TEXT NOT NULL DEFAULT 'Unknown',
-  content TEXT,
-  is_archived BOOLEAN DEFAULT 0,
-  parent_id TEXT REFERENCES documents(id) ON DELETE CASCADE,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);

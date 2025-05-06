@@ -2,7 +2,7 @@ import OffGridSvg from "./OffGridSvg"
 
 const Logo = () => {
   return (
-    <div className="w-[90px] flex flex-col justify-center items-center">
+    <div className="w-[120px] flex flex-col justify-center items-center pl-2">
       <OffGridSvg />
       <div className="w-8">
         <svg viewBox="0 0 57.99493 13.20259">

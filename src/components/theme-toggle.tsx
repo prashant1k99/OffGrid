@@ -1,18 +1,25 @@
-import { useTheme } from "@/components/theme-provider"
-import { Button } from "./ui/button"
+import { Theme, useTheme } from "@/components/theme-provider"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme()
 
-  const toggleTheme = () => {
-    if (theme == "light") {
-      setTheme("dark")
-    } else {
-      setTheme("light")
-    }
-  }
-
   return (
-    <Button onClick={() => toggleTheme()}>Toggle Theme</Button>
+    <Select value={theme} onValueChange={setTheme}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Change Theme" />
+      </SelectTrigger>
+      <SelectContent className="z-[99999]">
+        <SelectItem value={Theme.LIGHT}>Light</SelectItem>
+        <SelectItem value={Theme.DARK}>Dark</SelectItem>
+        <SelectItem value={Theme.SYSTEM}>System</SelectItem>
+      </SelectContent>
+    </Select>
   )
 }

@@ -4,6 +4,8 @@ import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState 
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
 import Logo from "./svg/Logo";
+import { ModeToggle } from "./theme-toggle";
+import Favourites from "./Favourites";
 
 const Navigation = () => {
   const location = useLocation();
@@ -98,8 +100,9 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar bg-primary-foreground overflow-y-auto relative flex w-60 flex-col z-[99999]",
+          "group/sidebar bg-primary-foreground overflow-y-auto relative flex w-60 flex-col z-[99999] gap-2",
           isResetting && "transition-all ease-in-out duration-300",
+          !isCollapsed && "p-2",
           isTablet && "w-0"
         )}
       >
@@ -113,9 +116,11 @@ const Navigation = () => {
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
-        <div className="p-2 py-4">
+        <div className="py-1">
           <Logo />
         </div>
+        <ModeToggle />
+        <Favourites />
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}
