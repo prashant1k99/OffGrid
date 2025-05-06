@@ -17,15 +17,6 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-// #[tauri::command]
-// async fn test(app: AppHandle, _state: tauri::State<'_, AppState>) -> Result<(), String> {
-//     let mut path = app.path().local_data_dir().unwrap();
-//     path.push("com.off-grid.io");
-//     log::info!("base_dir {:?}", path);
-//
-//     Ok(())
-// }
-
 const MIGRATION_SLICE: &[M<'_>] = &[
     M::up(
         "
