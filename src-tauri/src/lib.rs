@@ -46,8 +46,8 @@ END;
     ),
     M::up(
         "
-CREATE TRIGGER prevent_unarchive_if_parent_archived
-BEFORE UPDATE OF is_archived ON documents
+CREATE TRIGGER unlink_parent_after_unarchive
+AFTER UPDATE OF is_archived ON documents
 FOR EACH ROW
 WHEN NEW.is_archived = 0 AND OLD.is_archived = 1
       AND NEW.parent_id IS NOT NULL
@@ -56,7 +56,9 @@ WHEN NEW.is_archived = 0 AND OLD.is_archived = 1
           WHERE id = NEW.parent_id AND is_archived = 1
       )
 BEGIN
-    SELECT RAISE(ABORT, 'Cannot unarchive: parent document is archived');
+    UPDATE documents
+    SET parent_id = NULL
+    WHERE id = NEW.id;
 END;
 ",
     ),
@@ -89,7 +91,7 @@ pub fn run() {
             let mut conn = rusqlite::Connection::open(db_path)?;
 
             conn.pragma_update_and_check(None, "journal_mode", "WAL", |_| Ok(()))
-                .unwrap();
+                .expect("Failed to set journal_mode to WAL");
 
             MIGRATIONS.to_latest(&mut conn).unwrap();
 
