@@ -5,7 +5,7 @@ use tauri::Manager;
 mod docs;
 mod models;
 
-use docs::create::create_document;
+use docs::{archive::archive_document, create::create_document, list::list_documents};
 
 struct AppState {
     conn: Mutex<rusqlite::Connection>,
@@ -19,48 +19,46 @@ fn greet(name: &str) -> String {
 
 const MIGRATION_SLICE: &[M<'_>] = &[
     M::up(
-        "
-CREATE TABLE documents (
-  id TEXT PRIMARY KEY DEFAULT,
-  title TEXT NOT NULL DEFAULT 'Unknown',
-  content TEXT,
-  is_archived BOOLEAN DEFAULT 0,
-  parent_id TEXT REFERENCES documents(id) ON DELETE CASCADE,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-",
+        "CREATE TABLE IF NOT EXISTS documents (
+            id TEXT PRIMARY KEY,
+            title TEXT DEFAULT 'Unknown',
+            content TEXT,
+            is_archived BOOLEAN DEFAULT 0,
+            parent_id TEXT REFERENCES documents(id) ON DELETE CASCADE,
+            cover_img TEXT,
+            icon TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );",
     ),
     M::up(
-        "
-CREATE TRIGGER prevent_insert_if_parent_archived
-BEFORE INSERT ON documents
-FOR EACH ROW
-WHEN NEW.parent_id IS NOT NULL AND EXISTS (
-    SELECT 1 FROM documents WHERE id = NEW.parent_id AND is_archived = 1
-)
-BEGIN
-    SELECT RAISE(ABORT, 'Cannot create document: parent is archived');
-END;
-",
+        "DROP TRIGGER IF EXISTS prevent_insert_if_parent_archived;
+        CREATE TRIGGER prevent_insert_if_parent_archived
+        BEFORE INSERT ON documents
+        FOR EACH ROW
+        WHEN NEW.parent_id IS NOT NULL AND EXISTS (
+            SELECT 1 FROM documents WHERE id = NEW.parent_id AND is_archived = 1
+        )
+        BEGIN
+            SELECT RAISE(ABORT, 'Cannot create document: parent is archived');
+        END;",
     ),
     M::up(
-        "
-CREATE TRIGGER unlink_parent_after_unarchive
-AFTER UPDATE OF is_archived ON documents
-FOR EACH ROW
-WHEN NEW.is_archived = 0 AND OLD.is_archived = 1
-      AND NEW.parent_id IS NOT NULL
-      AND EXISTS (
-          SELECT 1 FROM documents
-          WHERE id = NEW.parent_id AND is_archived = 1
-      )
-BEGIN
-    UPDATE documents
-    SET parent_id = NULL
-    WHERE id = NEW.id;
-END;
-",
+        "DROP TRIGGER IF EXISTS unlink_parent_after_unarchive;
+        CREATE TRIGGER unlink_parent_after_unarchive
+        AFTER UPDATE OF is_archived ON documents
+        FOR EACH ROW
+        WHEN NEW.is_archived = 0 AND OLD.is_archived = 1
+              AND NEW.parent_id IS NOT NULL
+              AND EXISTS (
+                  SELECT 1 FROM documents
+                  WHERE id = NEW.parent_id AND is_archived = 1
+              )
+        BEGIN
+            UPDATE documents
+            SET parent_id = NULL
+            WHERE id = NEW.id;
+        END;",
     ),
 ];
 const MIGRATIONS: Migrations<'_> = Migrations::from_slice(MIGRATION_SLICE);
@@ -101,7 +99,12 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, create_document])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            create_document,
+            archive_document,
+            list_documents
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

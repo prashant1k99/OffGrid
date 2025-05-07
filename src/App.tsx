@@ -12,7 +12,7 @@ function App() {
       <div className="min-h-dvh max-w-dvw overflow-x-hidden">
         <RouterProvider router={router} />
       </div>
-      <Toaster />
+      <Toaster position="bottom-center" />
     </ThemeProvider>
   );
 }

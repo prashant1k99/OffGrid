@@ -35,8 +35,9 @@ fn db_create_document(
 
     let new_id = Uuid::new_v4().to_string();
 
-    let document = conn.query_row_and_then(
-            "INSERT INTO documents (id, title, parent_id) VALUES (?, ?, ?) RETURNING id, title, parent_id, created_at, updated_at;",
+    let document = conn
+        .query_row_and_then(
+            "INSERT INTO documents (id, title, parent_id) VALUES (?, ?, ?) RETURNING *;",
             (new_id, doc.title, doc.parent_id),
             |row| -> rusqlite::Result<Document> {
                 Ok(Document {
@@ -50,8 +51,10 @@ fn db_create_document(
                     created_at: row.get("created_at")?,
                     updated_at: row.get("updated_at")?,
                 })
-        })
+            },
+        )
         .map_err(|e| {
+            println!("Error: {:?}", e);
             let err = CreateError::RusqliteError(e.to_string());
             log::error!("err: {}", err);
             err

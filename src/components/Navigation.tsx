@@ -3,9 +3,9 @@ import { ChevronsLeft, MenuIcon } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
-import Logo from "./svg/Logo";
 import { ModeToggle } from "./theme-toggle";
 import Favourites from "./Favourites";
+import Lists from "./Lists";
 
 const Navigation = () => {
   const location = useLocation();
@@ -110,17 +110,17 @@ const Navigation = () => {
           role="button"
           onClick={collapse}
           className={cn(
-            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 hover:dark:bg-gray-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
+            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 hover:dark:bg-gray-600 absolute top-4 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
             isTablet && "opacity-100"
           )}
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
-        <div className="py-1">
-          <Logo />
+        <div className="py-0.5 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
+          <ModeToggle />
         </div>
-        <ModeToggle />
         <Favourites />
+        <Lists />
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}

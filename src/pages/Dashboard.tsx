@@ -1,9 +1,24 @@
+import { invoke } from '@tauri-apps/api/core';
+import { PlusCircleIcon } from "lucide-react";
+
 import TypewriterSvg from "@/components/svg/TypewriterSvg";
 import UnderlineSvg from "@/components/svg/UnderlineSvg";
 import { Button } from "@/components/ui/button";
-import { PlusCircleIcon } from "lucide-react";
+import { toast } from 'sonner';
 
 const Dashboard = () => {
+  const createDocument = () => {
+    const promise = invoke("create_document", { payload: JSON.stringify({}) })
+    toast.promise(promise, {
+      loading: "Creating a new note...",
+      success: (data) => {
+        console.log(data)
+        return "New note created";
+      },
+      error: 'Failed to create a new note'
+    })
+  }
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center space-y-4">
       <div className="w-[250px] h-[250px]">
@@ -16,7 +31,7 @@ const Dashboard = () => {
         <sub>With full privacy and all features</sub>
       </div>
       <div className="flex flex-col items-center gap-1">
-        <Button className="cursor-pointer">
+        <Button onClick={createDocument} className="cursor-pointer">
           <PlusCircleIcon />
           Create a Note
         </Button>
