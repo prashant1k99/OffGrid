@@ -103,7 +103,7 @@ pub fn run() {
             greet,
             create_document,
             archive_document,
-            list_documents
+            list_documents,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

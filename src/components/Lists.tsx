@@ -5,7 +5,11 @@ import { Separator } from './ui/separator';
 type Docs = {
   id: String,
   title: String,
+  child?: Docs[],
   icon?: String,
+  isArchived: boolean,
+  createdAt: String,
+  updatedAt: String
 }
 
 const Lists = () => {
@@ -28,6 +32,7 @@ const Lists = () => {
   useEffect(() => {
     loadData()
   }, [])
+
 
   return (
     <div>
