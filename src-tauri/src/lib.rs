@@ -5,7 +5,10 @@ use tauri::Manager;
 mod docs;
 mod models;
 
-use docs::{archive::archive_document, create::create_document, list::list_documents};
+use docs::{
+    archive::archive_document, create::create_document, list::list_documents,
+    search::search_command, update::update_command,
+};
 
 struct AppState {
     conn: Mutex<rusqlite::Connection>,
@@ -44,6 +47,21 @@ const MIGRATION_SLICE: &[M<'_>] = &[
         END;",
     ),
     M::up(
+        "CREATE TRIGGER prevent_update_on_archived_docs
+        BEFORE UPDATE ON documents
+        FOR EACH ROW
+        WHEN OLD.is_archived = 1
+          AND (
+            NEW.title IS NOT OLD.title OR
+            NEW.content IS NOT OLD.content OR
+            NEW.created_at IS NOT OLD.created_at OR
+            NEW.updated_at IS NOT OLD.updated_at
+          )
+        BEGIN
+          SELECT RAISE(ABORT, 'Cannot update archived document except parent_id and is_archived');
+        END;",
+    ),
+    M::up(
         "DROP TRIGGER IF EXISTS unlink_parent_after_unarchive;
         CREATE TRIGGER unlink_parent_after_unarchive
         AFTER UPDATE OF is_archived ON documents
@@ -59,6 +77,33 @@ const MIGRATION_SLICE: &[M<'_>] = &[
             SET parent_id = NULL
             WHERE id = NEW.id;
         END;",
+    ),
+    M::up(
+        "
+    CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
+        id UNINDEXED,
+        title,
+        content='',
+        tokenize = 'porter'
+    );
+    
+    INSERT INTO documents_fts (id, title)
+    SELECT id, title FROM documents;
+
+    DROP TRIGGER IF EXISTS documents_ai;
+    CREATE TRIGGER documents_ai AFTER INSERT ON documents BEGIN
+        INSERT INTO documents_fts (id, title) VALUES (NEW.id, NEW.title);
+    END;
+
+    DROP TRIGGER IF EXISTS documents_ad;
+    CREATE TRIGGER documents_ad AFTER DELETE ON documents BEGIN
+        DELETE FROM documents_fts WHERE id = OLD.id;
+    END;
+
+    DROP TRIGGER IF EXISTS documents_au;
+    CREATE TRIGGER documents_au AFTER UPDATE ON documents BEGIN
+        UPDATE documents_fts SET title = NEW.title WHERE id = NEW.id;
+    END;",
     ),
 ];
 const MIGRATIONS: Migrations<'_> = Migrations::from_slice(MIGRATION_SLICE);
@@ -105,6 +150,8 @@ pub fn run() {
             create_document,
             archive_document,
             list_documents,
+            search_command,
+            update_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

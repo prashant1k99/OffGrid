@@ -31,7 +31,6 @@ pub struct CreateDocument {
 pub struct UpdateDocument {
     pub id: String,
     pub title: Option<String>,
-    pub is_archived: Option<bool>,
     pub parent_id: Option<String>,
     pub content: Option<String>,
     pub cover_img: Option<String>,
