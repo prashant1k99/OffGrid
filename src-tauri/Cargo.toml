@@ -29,3 +29,4 @@ rusqlite = { version = "0.35.0", features = ["bundled", "chrono"] }
 chrono = { version = "0.4.41", features = ["serde"] }
 uuid = { version = "1.16.0", features = ["v4"] }
 rusqlite_migration = "2.1.0"
+tauri-plugin-os = "2"

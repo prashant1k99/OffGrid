@@ -1,14 +1,14 @@
 import { signal } from "@preact/signals-react";
 import { invoke } from "@tauri-apps/api/core";
 
-type Document = {
-  id: String,
-  title: String,
-  child?: Document[],
-  icon?: String,
+export type Document = {
+  id: string,
+  title: string,
+  child: Document[],
+  icon?: string,
   isArchived: boolean,
-  createdAt: String,
-  updatedAt: String
+  createdAt: string,
+  updatedAt: string
 }
 
 interface DocsState {

@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon } from "lucide-react"
+import { ChevronsLeft, MenuIcon, PlusCircle, Search } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
 import { ModeToggle } from "./theme-toggle";
-import Favourites from "./Favourites";
 import Lists from "./Lists";
+import { Item } from "./Item";
+import { createDocument } from "@/utils/createDocument";
 
 const Navigation = () => {
   const location = useLocation();
@@ -100,9 +101,8 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar bg-primary-foreground overflow-y-auto relative flex w-60 flex-col z-[99999] gap-2",
+          "group/sidebar bg-primary-foreground overflow-y-auto relative flex w-60 flex-col z-[99999]",
           isResetting && "transition-all ease-in-out duration-300",
-          !isCollapsed && "p-2",
           isTablet && "w-0"
         )}
       >
@@ -116,10 +116,15 @@ const Navigation = () => {
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
-        <div className="py-0.5 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
+        <div className="flex p-2 py-2.5 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
           <ModeToggle />
         </div>
-        <Favourites />
+        <Item onClick={() => {
+          console.log("Search")
+        }} label="Search" icon={Search} isSearch />
+        <Item onClick={() => {
+          createDocument()
+        }} label="New Page" icon={PlusCircle} />
         <Lists />
         <div
           onMouseDown={handleMouseDown}
