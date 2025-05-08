@@ -1,42 +1,22 @@
-import { invoke } from '@tauri-apps/api/core';
 import { Key, useEffect, useState } from 'react';
 import { Separator } from './ui/separator';
-
-type Docs = {
-  id: String,
-  title: String,
-  child?: Docs[],
-  icon?: String,
-  isArchived: boolean,
-  createdAt: String,
-  updatedAt: String
-}
+import docsState, { loadDocs } from "../state/docs"
+import { useSignalEffect } from '@preact/signals-react';
 
 const Lists = () => {
-  const [docs, setDocs] = useState<Docs[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [docs, setDocs] = useState(docsState.value.docs);
+  const [isLoading, setIsLoading] = useState(docsState.value.isLoading);
 
-  const loadData = async () => {
-    setIsLoading(true)
-    try {
-      const data = await invoke("list_documents", {
-        payload: JSON.stringify({
-          isArchived: false
-        })
-      })
-      console.log(data)
-      setDocs(data as Docs[])
-    } catch (error) {
-      console.log("Err: ", error)
-    } finally {
-      setIsLoading(false)
+  useSignalEffect(() => {
+    if (docsState) {
+      setDocs(docsState.value.docs);
+      setIsLoading(docsState.value.isLoading);
     }
-  }
+  })
 
   useEffect(() => {
-    loadData()
+    loadDocs()
   }, [])
-
 
   return (
     <div>

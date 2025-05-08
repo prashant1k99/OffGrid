@@ -5,6 +5,7 @@ import TypewriterSvg from "@/components/svg/TypewriterSvg";
 import UnderlineSvg from "@/components/svg/UnderlineSvg";
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
+import { loadDocs } from '@/state/docs';
 
 const Dashboard = () => {
   const createDocument = () => {
@@ -17,6 +18,7 @@ const Dashboard = () => {
       },
       error: 'Failed to create a new note'
     })
+    loadDocs()
   }
 
   return (
