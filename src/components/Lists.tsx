@@ -19,7 +19,11 @@ const Lists = () => {
   const loadData = async () => {
     setIsLoading(true)
     try {
-      const data = await invoke("list_documents", { payload: JSON.stringify({}) })
+      const data = await invoke("list_documents", {
+        payload: JSON.stringify({
+          isArchived: false
+        })
+      })
       console.log(data)
       setDocs(data as Docs[])
     } catch (error) {

@@ -1,6 +1,7 @@
 use std::sync::Mutex;
 
 use rusqlite::{params, Row};
+use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use thiserror::Error;
 
@@ -25,7 +26,7 @@ impl From<ListError> for tauri::ipc::InvokeError {
 
 fn db_list_documents(
     db: &Mutex<rusqlite::Connection>,
-    parent_id: Option<&str>,
+    filter: &Filters,
 ) -> Result<Vec<DocumentList>, ListError> {
     let conn = db.lock().map_err(|_| {
         let err = ListError::RusqliteError("Failed to acquire DB lock".to_string());
@@ -33,14 +34,14 @@ fn db_list_documents(
         err
     })?;
 
-    let (sql, param) = match parent_id {
+    let (sql, param) = match &filter.parent_id {
         Some(id) => (
-            "SELECT * FROM documents WHERE parent_id = ? ORDER BY updated_at DESC;",
-            params![id.to_string()],
+            "SELECT * FROM documents WHERE parent_id = ? AND is_archived = ? ORDER BY updated_at DESC;",
+            params![id.to_string(), filter.is_archived],
         ),
         None => (
-            "SELECT * FROM documents WHERE parent_id IS NULL ORDER BY updated_at DESC",
-            params![],
+            "SELECT * FROM documents WHERE parent_id IS NULL AND is_archived = ? ORDER BY updated_at DESC",
+            params![filter.is_archived],
         ),
     };
 
@@ -71,16 +72,23 @@ fn db_list_documents(
 
 pub fn fetch_doc_children(
     db: &Mutex<rusqlite::Connection>,
-    doc_id: Option<&str>,
+    filters: Filters,
 ) -> Result<Vec<DocumentListWithChild>, ListError> {
-    let docs = db_list_documents(db, doc_id)?;
+    let docs = db_list_documents(db, &filters)?;
+
     let docs_with_child: Vec<DocumentListWithChild> = docs
         .into_iter()
         .flat_map(
-            |doc_list_item| -> Result<DocumentListWithChild, ListError> {
+            move |doc_list_item| -> Result<DocumentListWithChild, ListError> {
                 let mut doc_with_child: DocumentListWithChild = doc_list_item.into();
 
-                let children = fetch_doc_children(db, Some(&doc_with_child.id))?;
+                let children = fetch_doc_children(
+                    db,
+                    Filters {
+                        parent_id: Some(doc_with_child.id.clone()),
+                        is_archived: filters.is_archived,
+                    },
+                )?;
                 doc_with_child.child = Box::new(Some(children));
                 Ok(doc_with_child)
             },
@@ -90,10 +98,30 @@ pub fn fetch_doc_children(
     Ok(docs_with_child)
 }
 
+fn default_is_archive_filter() -> bool {
+    false
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Filters {
+    parent_id: Option<String>,
+    #[serde(default = "default_is_archive_filter")]
+    is_archived: bool,
+}
+
 #[tauri::command]
 pub fn list_documents(
     _app: AppHandle,
     state: tauri::State<'_, AppState>,
+    payload: String,
 ) -> Result<Vec<DocumentListWithChild>, ListError> {
-    fetch_doc_children(&state.conn, None)
+    let list_docs_payload: Filters = serde_json::from_str(&payload).map_err(|e| {
+        let err = ListError::JsonError(e.to_string());
+        log::error!("Payload:{}, err: {}", payload, err);
+        err
+    })?;
+
+    // This also prevents circular dependency, so if a doc has parent_id and that parent has the
+    // child doc_id, the entire thread won't be picked
+    fetch_doc_children(&state.conn, list_docs_payload)
 }
