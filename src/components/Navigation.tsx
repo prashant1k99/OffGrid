@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings, Trash } from "lucide-react"
+import { ChevronsLeft, LifeBuoy, MenuIcon, PlusCircle, Search, Settings, Trash } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
@@ -9,6 +9,7 @@ import { createDocument } from "@/utils/createDocument";
 import { Separator } from "./ui/separator";
 import ItemOption from "./ItemOptions";
 import TrashPopup from "./Trash";
+import { ScrollArea } from "./ui/scroll-area";
 
 const Navigation = () => {
   const location = useLocation();
@@ -118,27 +119,31 @@ const Navigation = () => {
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
-        <div className="flex p-2 py-2.5 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
+        <div className="flex p-2 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
           <ModeToggle />
         </div>
+        <div className="p-2">
+          <ItemOption onClick={() => {
+            console.log("Search")
+          }} label="Search" icon={Search} isSearch />
 
-        <ItemOption onClick={() => {
-          console.log("Search")
-        }} label="Search" icon={Search} isSearch />
+          <ItemOption onClick={() => {
+            createDocument()
+          }} label="New Page" icon={PlusCircle} />
 
-        <ItemOption onClick={() => {
-          createDocument()
-        }} label="New Page" icon={PlusCircle} />
-
-        <ItemOption onClick={() => {
-          console.log("Show settings")
-        }} label="Settings" icon={Settings} />
-        <Separator className="my-1" />
-        <div className="flex-grow max-h-[83%] overflow-x-hidden overflow-y-auto">
-          <Lists />
+          <ItemOption onClick={() => {
+            console.log("Show settings")
+          }} label="Settings" icon={Settings} />
         </div>
         <Separator />
-        <TrashPopup />
+        <ScrollArea className="flex-grow max-h-[83%] overflow-x-hidden overflow-y-auto p-2">
+          <Lists />
+        </ScrollArea>
+        <Separator />
+        <div className="p-2">
+          <TrashPopup />
+          <ItemOption label="Support" icon={LifeBuoy} onClick={() => console.log("Support")} />
+        </div>
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}

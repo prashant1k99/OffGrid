@@ -1,4 +1,4 @@
-import { Trash } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import ItemOption from "./ItemOptions";
 
 const TrashPopup = () => {
@@ -6,7 +6,7 @@ const TrashPopup = () => {
     <>
       <ItemOption
         label="Trash"
-        icon={Trash}
+        icon={Trash2}
         onClick={() => console.log("Do trash")}
       />
     </>
