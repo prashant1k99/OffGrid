@@ -12,7 +12,7 @@ export function ModeToggle() {
 
   return (
     <Select value={theme} onValueChange={setTheme}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full text-muted-foreground border-0">
         <SelectValue placeholder="Change Theme" />
       </SelectTrigger>
       <SelectContent className="z-[99999]">

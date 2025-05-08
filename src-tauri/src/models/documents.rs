@@ -22,6 +22,7 @@ fn default_title() -> Option<String> {
 pub struct CreateDocument {
     #[serde(default = "default_title")]
     pub title: Option<String>,
+    #[serde(alias = "parentId")]
     pub parent_id: Option<String>,
 }
 

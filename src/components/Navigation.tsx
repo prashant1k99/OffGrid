@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon, PlusCircle, Search } from "lucide-react"
+import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
 import { ModeToggle } from "./theme-toggle";
 import Lists from "./Lists";
-import { Item } from "./Item";
 import { createDocument } from "@/utils/createDocument";
+import { Separator } from "./ui/separator";
+import ItemOption from "./ItemOptions";
 
 const Navigation = () => {
   const location = useLocation();
@@ -119,12 +120,19 @@ const Navigation = () => {
         <div className="flex p-2 py-2.5 w-full group-hover/sidebar:w-[calc(100%-2rem)] transition-all ease-in-out duration-300">
           <ModeToggle />
         </div>
-        <Item onClick={() => {
+
+        <ItemOption onClick={() => {
           console.log("Search")
         }} label="Search" icon={Search} isSearch />
-        <Item onClick={() => {
+
+        <ItemOption onClick={() => {
           createDocument()
         }} label="New Page" icon={PlusCircle} />
+
+        <ItemOption onClick={() => {
+          console.log("Show settings")
+        }} label="Settings" icon={Settings} />
+        <Separator className="my-1" />
         <Lists />
         <div
           onMouseDown={handleMouseDown}

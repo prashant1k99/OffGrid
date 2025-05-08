@@ -4,6 +4,7 @@ import {
 } from "react-router";
 import MainLayout from "./layout/main";
 import Dashboard from "./pages/Dashboard";
+import Document from "./pages/Document";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Dashboard
+      },
+      {
+        path: "/documents/:parentPath/:docId",
+        Component: Document
       },
       {
         path: "/data",

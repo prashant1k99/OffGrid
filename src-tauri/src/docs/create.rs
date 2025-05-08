@@ -69,11 +69,14 @@ pub fn create_document(
     state: tauri::State<'_, AppState>,
     payload: String,
 ) -> Result<Document, CreateError> {
+    println!("Payload: {payload}");
     let create_doc_payload: CreateDocument = serde_json::from_str(&payload).map_err(|e| {
         let err = CreateError::JsonError(e.to_string());
         log::error!("Payload:{}, err: {}", payload, err);
         err
     })?;
+
+    println!("Payload {:#?}", create_doc_payload);
 
     db_create_document(&state.conn, create_doc_payload)
 }
