@@ -19,14 +19,15 @@ fn default_title() -> Option<String> {
     Some("Unknown".to_string())
 }
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateDocument {
     #[serde(default = "default_title")]
     pub title: Option<String>,
-    #[serde(alias = "parentId")]
     pub parent_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateDocument {
     pub id: String,
     pub title: Option<String>,
@@ -38,6 +39,7 @@ pub struct UpdateDocument {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateDocumentArchive {
     pub id: String,
     pub is_archived: bool,

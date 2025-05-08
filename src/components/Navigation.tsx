@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from "lucide-react"
+import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings, Trash } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
@@ -8,6 +8,7 @@ import Lists from "./Lists";
 import { createDocument } from "@/utils/createDocument";
 import { Separator } from "./ui/separator";
 import ItemOption from "./ItemOptions";
+import TrashPopup from "./Trash";
 
 const Navigation = () => {
   const location = useLocation();
@@ -133,7 +134,11 @@ const Navigation = () => {
           console.log("Show settings")
         }} label="Settings" icon={Settings} />
         <Separator className="my-1" />
-        <Lists />
+        <div className="flex-grow max-h-[83%] overflow-x-hidden overflow-y-auto">
+          <Lists />
+        </div>
+        <Separator />
+        <TrashPopup />
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}

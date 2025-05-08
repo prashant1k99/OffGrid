@@ -16,7 +16,7 @@ const router = createBrowserRouter([
         Component: Dashboard
       },
       {
-        path: "/documents/:parentPath/:docId",
+        path: "/documents/:docId",
         Component: Document
       },
       {

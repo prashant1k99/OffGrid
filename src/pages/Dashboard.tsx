@@ -5,14 +5,20 @@ import UnderlineSvg from "@/components/svg/UnderlineSvg";
 import { Button } from "@/components/ui/button";
 import { createDocument } from "@/utils/createDocument";
 import { useState } from "react";
+import { useNavigate } from "react-router";
+import { Document } from "@/state/docs";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const createDoc = () => {
     setIsLoading(true)
 
-    createDocument().finally(() => {
+    createDocument().then((docValue: unknown) => {
+      const doc = docValue as Document;
+      navigate(`/documents/${doc.id}`)
+    }).finally(() => {
       setIsLoading(false)
     })
   }

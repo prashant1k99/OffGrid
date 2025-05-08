@@ -5,11 +5,11 @@ import { ListItem, ListItemSkeleton } from './ListItem';
 import { File } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { createDocument } from '@/utils/createDocument';
+import { archiveDocument } from '@/utils/archiveDocuments';
 
-const RenderList = ({ level, docs, redirectPath }: {
+const RenderList = ({ level, docs }: {
   level: number,
   docs: Document[],
-  redirectPath: string
 }) => {
   const params = useParams();
   const navigate = useNavigate();
@@ -22,12 +22,19 @@ const RenderList = ({ level, docs, redirectPath }: {
     }))
   }
 
-  const createChild = (parentId: string, redirectPath: string) => {
+  const createChild = (parentId: string) => {
     createDocument(parentId)
-      .then((childId) => {
+      .then(childValue => {
+        const child = childValue as Document;
         onExpand(parentId, true)
-        navigate(`/documents/${redirectPath}/${childId}`)
+        navigate(`/documents/${child.id}`)
       })
+  }
+
+  const archiveDoc = (docId: string) => {
+    archiveDocument(docId).then(() => {
+      navigate("/")
+    })
   }
 
   return docs.map(doc => (
@@ -40,16 +47,19 @@ const RenderList = ({ level, docs, redirectPath }: {
         isActive={params.docId == doc.id}
         level={level}
         onClick={() => {
-          navigate(`/documents/${redirectPath}/${doc.id}`)
+          navigate(`/documents/${doc.id}`)
         }}
         onCreateChild={() => {
-          createChild(doc.id, `${redirectPath}+${doc.id}`)
+          createChild(doc.id)
+        }}
+        onArchive={() => {
+          archiveDoc(doc.id)
         }}
         onExpanded={() => onExpand(doc.id)}
         label={doc.title}
       />
       {(doc.child.length > 0 && expanded[doc.id]) && (
-        <RenderList level={level + 1} docs={doc.child} redirectPath={`${redirectPath}+${doc.id}`} />
+        <RenderList level={level + 1} docs={doc.child} />
       )}
     </div>
   ))
@@ -78,9 +88,13 @@ const Lists = () => {
           <ListItemSkeleton />
           <ListItemSkeleton />
         </div>
-      ) : (
-        <RenderList level={0} docs={docs} redirectPath="0" />
-      )}
+      ) :
+        docs.length == 0 ? (
+          <div className='p-1.5 px-2.5 text-muted-foreground text-sm'>No Notes found</div>
+        ) : (
+          <RenderList level={0} docs={docs} />
+        )
+      }
     </div>
   )
 }

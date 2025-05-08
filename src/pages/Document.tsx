@@ -6,7 +6,7 @@ const Document = () => {
     <div className="h-full w-full flex flex-col items-center justify-center space-y-4">
       Hello World
       <br />
-      {params.parentPath} | {params.docId}
+      {params.docId}
     </div>
   )
 }
