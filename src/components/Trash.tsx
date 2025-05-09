@@ -18,6 +18,7 @@ import Fuse from "fuse.js";
 import { useNavigate } from "react-router";
 import { deleteDocument } from "@/utils/deleteDocument";
 import { restoreDocumnet } from "@/utils/archiveDocuments";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface TrashItemsProps {
   document: Document,
@@ -82,8 +83,12 @@ const TrashPopup = () => {
   }, [])
 
   useEffect(() => {
-    const docs = searcher?.search(search).map(doc => doc.item) as Document[]
-    setDocs(docs)
+    if (search != "") {
+      const docs = searcher?.search(search).map(doc => doc.item) as Document[]
+      setDocs(docs)
+    } else {
+      setDocs(trashState.value.docs)
+    }
   }, [search])
 
   const permanatlyDelete = (docId: string) => {
@@ -111,8 +116,9 @@ const TrashPopup = () => {
         />
       </PopoverTrigger>
       <PopoverContent
-        className="p-0 w-96"
-        side={"right"}>
+        className="p-0 pb-3 w-96 h-[400px] flex flex-col"
+        side={"right"}
+      >
         <div className="text-sm p-2">
           <div
             className={cn(
@@ -131,27 +137,34 @@ const TrashPopup = () => {
             <div className="h-0.5 w-full loader-bar" />
           )}
         </div>
-        <div className="mt-2 px-1 pb-1">
+        <div className="mt-2 px-1 pb-1 h-full">
           {isLoading ? (
             <>
               <TrashItemsSkeleton />
               <TrashItemsSkeleton />
               <TrashItemsSkeleton />
             </>
-          ) :
-            docs.length == 0 ? (
-              <p className="hidden last:block text-xs text-center text-muted-foreground pb-2">
-                No documents found
-              </p>
-            ) : docs.map(doc => (
-              <TrashItems
-                key={doc.id}
-                document={doc}
-                onClick={openArchivedDoc}
-                onRemove={permanatlyDelete}
-                onRestore={restoreItem}
-              />
-            ))
+          ) : (
+            <ScrollArea className="h-full">
+              <div>
+                {
+                  docs.length == 0 ? (
+                    <p className="hidden last:block text-xs text-center text-muted-foreground pb-2">
+                      No documents found
+                    </p>
+                  ) : docs.map(doc => (
+                    <TrashItems
+                      key={doc.id}
+                      document={doc}
+                      onClick={openArchivedDoc}
+                      onRemove={permanatlyDelete}
+                      onRestore={restoreItem}
+                    />
+                  ))
+                }
+              </div>
+            </ScrollArea>
+          )
           }
         </div>
       </PopoverContent>

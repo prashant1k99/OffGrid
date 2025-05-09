@@ -44,18 +44,6 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const isMacOs = platform() == "macos"
-    const down = (e: KeyboardEvent) => {
-      if ((isMacOs ? e.metaKey : e.ctrlKey) && e.key == "k") {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
-
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
 
   useEffect(() => {
     onOpenChange(open)
@@ -102,6 +90,22 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
     setOpen(false)
   }
 
+  useEffect(() => {
+    const isMacOs = platform() == "macos"
+    const down = (e: KeyboardEvent) => {
+      if ((isMacOs ? e.metaKey : e.ctrlKey) && e.key == "k") {
+        e.preventDefault()
+        setOpen((open) => !open)
+      } else if ((isMacOs ? e.metaKey : e.ctrlKey) && e.key == "n") {
+        e.preventDefault()
+        onCreateNewNote()
+      }
+    }
+
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
   return (
     <>
       <ItemOption onClick={() => setOpen(true)} label="Search" icon={Search} shortcutKey="K" />
@@ -120,7 +124,7 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
                       key={document.id}
                       value={`${document.id}-${document.title}`}
                       title={document.title}
-                      onSelect={onSelect}
+                      onSelect={() => onSelect(document.id)}
                     >
                       {document.icon ? (
                         <p className="mr-2 text-[18px]">
@@ -136,8 +140,10 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
                   ))
                 }
                 <CommandItem onSelect={() => onCreateNewNote(true)} onClick={() => onCreateNewNote()}>
-                  <File />
-                  {search} - Create New Note
+                  <File className="w-4 h-4 mr-2" />
+                  {search} - <span className="font-bold">
+                    Create New Note
+                  </span>
                 </CommandItem>
               </CommandGroup>
             )
