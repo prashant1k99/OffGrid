@@ -2,10 +2,11 @@ import { loadDocs } from "@/state/docs";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 
-const createDocument = async (parentId?: string) => {
+const createDocument = async (title?: string, parentId?: string) => {
   try {
     const docId = await invoke("create_document", {
       payload: JSON.stringify({
+        title,
         parentId
       })
     })

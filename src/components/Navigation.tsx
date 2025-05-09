@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, LifeBuoy, MenuIcon, PlusCircle, Search, Settings } from "lucide-react"
+import { ChevronsLeft, LifeBuoy, MenuIcon, PlusCircle, Settings } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
@@ -130,7 +130,7 @@ const Navigation = () => {
 
           <ItemOption onClick={() => {
             createDocument()
-          }} label="New Page" icon={PlusCircle} />
+          }} label="New Page" icon={PlusCircle} shortcutKey="N" />
 
           <ItemOption onClick={() => {
             console.log("Show settings")

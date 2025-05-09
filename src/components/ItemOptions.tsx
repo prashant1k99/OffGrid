@@ -6,10 +6,10 @@ interface ItemProps {
   label: String;
   icon: LucideIcon;
   onClick: () => void;
-  isSearch?: boolean;
+  shortcutKey?: string
 }
 
-const ItemOption = ({ label, onClick, icon: Icon, isSearch }: ItemProps) => {
+const ItemOption = ({ label, onClick, icon: Icon, shortcutKey }: ItemProps) => {
   const getSearchText = platform() == "macos" ? "⌘" : "CTRL"
 
   return (
@@ -25,9 +25,9 @@ const ItemOption = ({ label, onClick, icon: Icon, isSearch }: ItemProps) => {
         {label}
       </span>
       {
-        isSearch && (
+        shortcutKey && (
           <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted p-1.5 font-mono text-[12px] font-medium text-muted-foreground">
-            <span className="text-sm">{getSearchText}</span>K
+            <span className="text-sm">{getSearchText}</span>{shortcutKey}
           </kbd>
         )
       }

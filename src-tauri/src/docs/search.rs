@@ -46,7 +46,12 @@ fn db_list_documents(
         })
     }
 
-    let fts_query = format!("\"{}\"", filter.search_term.replace("\"", "\"\""));
+    let fts_query = &filter
+        .search_term
+        .split_whitespace()
+        .map(|e| format!("{}*", e))
+        .collect::<Vec<String>>()
+        .join(" ");
 
     let mut stmt = conn
         .prepare(
@@ -59,7 +64,7 @@ WHERE documents_fts MATCH ?
         .map_err(map_sqlite_err)?;
 
     let document_iter = stmt
-        .query_map(params![&fts_query, filter.is_archived], handle_db_docs)
+        .query_map(params![fts_query, filter.is_archived], handle_db_docs)
         .map_err(|e| {
             let err = SearchError::RusqliteError(e.to_string());
             log::error!("{}", err);
