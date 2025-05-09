@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 const archiveDocument = async (docId: string) => {
   try {
-    const childId = await invoke("archive_document", {
+    await invoke("archive_document", {
       payload: JSON.stringify({
         id: docId,
         isArchived: true
@@ -12,12 +12,32 @@ const archiveDocument = async (docId: string) => {
     })
     toast.success("Successfully archived...")
     await loadDocs()
-    return childId
+    return
   } catch (error) {
     toast.error("Failed to archive document")
+    throw error
+  }
+}
+
+const restoreDocumnet = async (docId: string) => {
+  try {
+    await invoke("archive_document", {
+      payload: JSON.stringify({
+        id: docId,
+        isArchived: false
+      })
+    })
+    toast.success("Successfully restored notes...")
+    await loadDocs()
+    return
+  } catch (error) {
+    console.log(error)
+    toast.error("Failed to restore note")
+    throw error
   }
 }
 
 export {
-  archiveDocument
+  archiveDocument,
+  restoreDocumnet
 }

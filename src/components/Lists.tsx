@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import docsState, { Document, loadDocs } from "../state/docs"
+import docsState, { loadDocs } from "../state/docs"
 import { useSignalEffect } from '@preact/signals-react';
 import { ListItem, ListItemSkeleton } from './ListItem';
 import { File } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { createDocument } from '@/utils/createDocument';
 import { archiveDocument } from '@/utils/archiveDocuments';
+import { PopulatedDocument } from '@/utils/readDocuments';
 
 const RenderList = ({ level, docs }: {
   level: number,
-  docs: Document[],
+  docs: PopulatedDocument[],
 }) => {
   const params = useParams();
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const RenderList = ({ level, docs }: {
   const createChild = (parentId: string) => {
     createDocument(parentId)
       .then(childValue => {
-        const child = childValue as Document;
+        const child = childValue as PopulatedDocument;
         onExpand(parentId, true)
         navigate(`/documents/${child.id}`)
       })

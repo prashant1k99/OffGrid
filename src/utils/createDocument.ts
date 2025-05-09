@@ -4,16 +4,18 @@ import { toast } from "sonner";
 
 const createDocument = async (parentId?: string) => {
   try {
-    const childId = await invoke("create_document", {
+    const docId = await invoke("create_document", {
       payload: JSON.stringify({
         parentId
       })
     })
     toast.success("New note created...")
     await loadDocs()
-    return childId
+    return docId
   } catch (error) {
+    console.error(error)
     toast.error("Failed to create new note...")
+    throw error
   }
 }
 

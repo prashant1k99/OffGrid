@@ -9,6 +9,38 @@ body,
 
 @custom-variant dark (&:is(.dark *));
 
+.loader-bar {
+  display: block;
+  border-radius: 30px;
+  background-color: rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.loader-bar::before {
+  content: "";
+  position: absolute;
+  background: linear-gradient(to right, #0071e2, #4da1ff, #0071e2); /* Gradient example */
+  /* background: var(--loader-color); */
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  animation: moving 1s ease-in-out infinite;
+}
+
+@keyframes moving {
+  50% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0;
+    right: 0;
+    left: unset;
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

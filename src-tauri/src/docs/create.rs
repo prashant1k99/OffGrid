@@ -1,6 +1,5 @@
 use std::sync::Mutex;
 
-use tauri::AppHandle;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -65,7 +64,6 @@ fn db_create_document(
 
 #[tauri::command]
 pub fn create_document(
-    _app: AppHandle,
     state: tauri::State<'_, AppState>,
     payload: String,
 ) -> Result<Document, CreateError> {

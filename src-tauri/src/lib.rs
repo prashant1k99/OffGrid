@@ -6,8 +6,12 @@ mod docs;
 mod models;
 
 use docs::{
-    archive::archive_document, create::create_document, list::list_documents,
-    search::search_command, update::update_command,
+    archive::archive_document,
+    create::create_document,
+    delete::delete_command,
+    list::{list_documents, simple_list_documents},
+    search::search_documents,
+    update::update_command,
 };
 
 struct AppState {
@@ -79,8 +83,7 @@ const MIGRATION_SLICE: &[M<'_>] = &[
         END;",
     ),
     M::up(
-        "
-    CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
+        "CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
         id UNINDEXED,
         title,
         content='',
@@ -150,8 +153,10 @@ pub fn run() {
             create_document,
             archive_document,
             list_documents,
-            search_command,
-            update_command
+            simple_list_documents,
+            search_documents,
+            update_command,
+            delete_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

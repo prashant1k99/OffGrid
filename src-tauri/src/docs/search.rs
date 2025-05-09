@@ -2,7 +2,6 @@ use std::sync::Mutex;
 
 use rusqlite::{params, Row};
 use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
 use thiserror::Error;
 
 use crate::{models::documents::DocumentList, AppState};
@@ -13,6 +12,8 @@ pub enum SearchError {
     RusqliteError(String),
     #[error("JSON deserialization error: {0}")]
     JsonError(String),
+    #[error("Empty search term not allowed")]
+    EmptySearchTerm,
 }
 
 impl From<SearchError> for tauri::ipc::InvokeError {
@@ -31,15 +32,7 @@ fn db_list_documents(
         err
     })?;
 
-    let mut stmt = conn
-        .prepare(
-            "SELECT d.*
-FROM documents d
-JOIN documents_fts fts ON d.id = fts.id
-WHERE fts MATCH ?
-  AND d.is_archived = ?;",
-        )
-        .map_err(|e| SearchError::RusqliteError(e.to_string()))?;
+    let map_sqlite_err = |e: rusqlite::Error| SearchError::RusqliteError(e.to_string());
 
     fn handle_db_docs(row: &Row) -> Result<DocumentList, rusqlite::Error> {
         Ok(DocumentList {
@@ -53,12 +46,25 @@ WHERE fts MATCH ?
         })
     }
 
-    let document_iter = stmt
-        .query_map(
-            params![filter.search_term, filter.is_archived],
-            handle_db_docs,
+    let fts_query = format!("\"{}\"", filter.search_term.replace("\"", "\"\""));
+
+    let mut stmt = conn
+        .prepare(
+            "SELECT d.*
+FROM documents d
+JOIN documents_fts ON d.id = documents_fts.id
+WHERE documents_fts MATCH ?
+  AND d.is_archived = ?;",
         )
-        .map_err(|e| SearchError::RusqliteError(e.to_string()))?;
+        .map_err(map_sqlite_err)?;
+
+    let document_iter = stmt
+        .query_map(params![&fts_query, filter.is_archived], handle_db_docs)
+        .map_err(|e| {
+            let err = SearchError::RusqliteError(e.to_string());
+            log::error!("{}", err);
+            err
+        })?;
 
     let documents = document_iter.filter_map(Result::ok).collect();
 
@@ -78,8 +84,7 @@ pub struct Filters {
 }
 
 #[tauri::command]
-pub fn search_command(
-    _app: AppHandle,
+pub fn search_documents(
     state: tauri::State<'_, AppState>,
     payload: String,
 ) -> Result<Vec<DocumentList>, SearchError> {
@@ -88,6 +93,10 @@ pub fn search_command(
         log::error!("Payload:{}, err: {}", payload, err);
         err
     })?;
+
+    if search_doc_payload.search_term.is_empty() {
+        return Err(SearchError::EmptySearchTerm);
+    }
 
     db_list_documents(&state.conn, &search_doc_payload)
 }

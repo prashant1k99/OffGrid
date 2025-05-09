@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createDocument } from "@/utils/createDocument";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Document } from "@/state/docs";
+import { PopulatedDocument } from "@/utils/readDocuments";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -16,7 +16,7 @@ const Dashboard = () => {
     setIsLoading(true)
 
     createDocument().then((docValue: unknown) => {
-      const doc = docValue as Document;
+      const doc = docValue as PopulatedDocument;
       navigate(`/documents/${doc.id}`)
     }).finally(() => {
       setIsLoading(false)

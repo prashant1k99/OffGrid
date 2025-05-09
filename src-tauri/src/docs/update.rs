@@ -52,14 +52,17 @@ fn db_list_documents(
             update_payload.id
         ],
     )
-    .map_err(|e| UpdateError::RusqliteError(e.to_string()))?;
+    .map_err(|e| {
+        let err = UpdateError::RusqliteError(e.to_string());
+        log::error!("{}", err);
+        err
+    })?;
 
     Ok(())
 }
 
 #[tauri::command]
 pub fn update_command(
-    _app: AppHandle,
     state: tauri::State<'_, AppState>,
     payload: String,
 ) -> Result<(), UpdateError> {

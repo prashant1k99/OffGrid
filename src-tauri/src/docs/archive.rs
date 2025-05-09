@@ -1,6 +1,5 @@
 use std::sync::Mutex;
 
-use tauri::AppHandle;
 use thiserror::Error;
 
 use crate::{models::documents::UpdateDocumentArchive, AppState};
@@ -59,7 +58,6 @@ WHERE id IN (SELECT id FROM descendants);
 
 #[tauri::command]
 pub fn archive_document(
-    _app: AppHandle,
     state: tauri::State<'_, AppState>,
     payload: String,
 ) -> Result<(), ArchiveError> {

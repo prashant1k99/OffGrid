@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, LifeBuoy, MenuIcon, PlusCircle, Search, Settings, Trash } from "lucide-react"
+import { ChevronsLeft, LifeBuoy, MenuIcon, PlusCircle, Search, Settings } from "lucide-react"
 import { ElementRef, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts"
@@ -10,6 +10,7 @@ import { Separator } from "./ui/separator";
 import ItemOption from "./ItemOptions";
 import TrashPopup from "./Trash";
 import { ScrollArea } from "./ui/scroll-area";
+import GlobalSearch from "./GlobalSearch";
 
 const Navigation = () => {
   const location = useLocation();
@@ -23,6 +24,8 @@ const Navigation = () => {
 
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(isTablet);
+
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (isTablet) {
@@ -123,9 +126,7 @@ const Navigation = () => {
           <ModeToggle />
         </div>
         <div className="p-2">
-          <ItemOption onClick={() => {
-            console.log("Search")
-          }} label="Search" icon={Search} isSearch />
+          <GlobalSearch open={searchOpen} onOpenChange={(val) => setSearchOpen(val)} />
 
           <ItemOption onClick={() => {
             createDocument()
@@ -136,7 +137,7 @@ const Navigation = () => {
           }} label="Settings" icon={Settings} />
         </div>
         <Separator />
-        <ScrollArea className="flex-grow max-h-[83%] overflow-x-hidden overflow-y-auto p-2">
+        <ScrollArea type="auto" className="flex-grow max-h-[83%] overflow-x-hidden overflow-y-auto p-2">
           <Lists />
         </ScrollArea>
         <Separator />

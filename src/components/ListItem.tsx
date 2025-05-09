@@ -1,18 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, LucideIcon, Plus, Trash } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "./ui/button";
-import { useState } from "react";
+import ConfirmModal from "./ConfirmModal";
 
 interface ItemProps {
   label: string;
@@ -31,7 +20,6 @@ interface ItemProps {
 
 export const ListItem = ({ id, canExpand, onExpanded, onCreateChild, onArchive, isActive, isExpanded, docIcon, level = 0, label, onClick, icon: Icon }: ItemProps) => {
   const ChevronIcon = isExpanded ? ChevronDown : ChevronRight;
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 
   return (
     <>
@@ -84,46 +72,15 @@ export const ListItem = ({ id, canExpand, onExpanded, onCreateChild, onArchive, 
           >
             <Plus className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div
-            role="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (canExpand) {
-                setIsArchiveDialogOpen(true)
-              } else {
-                onArchive()
-              }
-            }}
-            className="cursor-pointer opacity-0 group-hover:opacity-100 h-full ml-auto rounded hover:bg-neutral-300 dark:hover:bg-neutral-600"
-          >
-            <Trash className="h-3.5 w-3.5 text-muted-foreground hover:text-red-600" />
-          </div>
+          <ConfirmModal title="Archiving Note" description={canExpand ? "This action will archive all the children notes along with this note..." : "This action will archive this note which can be restored from Trash bin..."} onConfirm={onArchive}>
+            <div
+              role="button"
+              className="cursor-pointer opacity-0 group-hover:opacity-100 h-full ml-auto rounded hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            >
+              <Trash className="h-3.5 w-3.5 text-muted-foreground hover:text-red-600" />
+            </div>
+          </ConfirmModal>
         </div>
-        <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
-          <DialogTrigger className="hidden">
-            Open
-          </DialogTrigger>
-          <DialogContent className="min-w-[250px] w-[400px]">
-            <DialogHeader>
-              <DialogTitle>Archiving Note</DialogTitle>
-              <DialogDescription>
-                This will archive all the children notes as well.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="sm:justify-start">
-              <DialogClose asChild>
-                <Button type="button" className="cursor-pointer" variant="secondary">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button type="button" className="cursor-pointer" variant={"destructive"} onClick={onArchive}>
-                  Confirm
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div >
     </>
   )
