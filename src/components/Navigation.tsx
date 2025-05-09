@@ -129,7 +129,7 @@ const Navigation = () => {
           <GlobalSearch open={searchOpen} onOpenChange={(val) => setSearchOpen(val)} />
 
           <ItemOption onClick={() => {
-            createDocument()
+            createDocument({})
           }} label="New Page" icon={PlusCircle} shortcutKey="N" />
 
           <ItemOption onClick={() => {

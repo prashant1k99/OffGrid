@@ -15,6 +15,9 @@ import ConfirmModal from "./ConfirmModal";
 import { useSignalEffect } from "@preact/signals-react";
 import trashState, { loadTrash } from "@/state/trash";
 import Fuse from "fuse.js";
+import { useNavigate } from "react-router";
+import { deleteDocument } from "@/utils/deleteDocument";
+import { restoreDocumnet } from "@/utils/archiveDocuments";
 
 interface TrashItemsProps {
   document: Document,
@@ -59,6 +62,9 @@ const TrashItemsSkeleton = () => {
 }
 
 const TrashPopup = () => {
+  const navigator = useNavigate()
+
+  const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(trashState.value.isLoading);
   const [searcher, setSearcher] = useState<Fuse<Document> | null>(trashState.value.fuse);
@@ -81,19 +87,22 @@ const TrashPopup = () => {
   }, [search])
 
   const permanatlyDelete = (docId: string) => {
-    console.log("permanatlyDelete ", docId)
+    deleteDocument(docId)
   }
 
-  const restoreItem = (e: any, docId: string) => {
-    console.log("restoreItem ", docId)
+  const restoreItem = (_e: any, docId: string) => {
+    restoreDocumnet(docId)
+    navigator(`/archived/${docId}`)
+    setOpen(false)
   }
 
   const openArchivedDoc = (docId: string) => {
-    console.log('openArchivedDoc', docId)
+    navigator(`/archived/${docId}`)
+    setOpen(false)
   }
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="w-full">
         <ItemOption
           label="Trash"

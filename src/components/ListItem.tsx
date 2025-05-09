@@ -56,7 +56,7 @@ export const ListItem = ({ id, canExpand, onExpanded, onCreateChild, onArchive, 
             <Icon className="w-4 h-4 text-muted-foreground" />
           )}
         </div>
-        <span className="group-hover:truncate">
+        <span className="truncate">
           {label}
         </span>
         <div

@@ -8,13 +8,15 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import ItemOption from "./ItemOptions"
 import { File, PlusCircle, Search, Settings } from "lucide-react"
 import { platform } from '@tauri-apps/plugin-os';
 import { useNavigate } from "react-router";
 import { createDocument } from "@/utils/createDocument";
 import { Document } from "@/utils/readDocuments";
+import debounce from "@/utils/debounce";
+import { searchDocuments } from "@/utils/searchDocuments";
 
 interface GlobalSearchProps {
   open: boolean,
@@ -57,16 +59,38 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
 
   useEffect(() => {
     onOpenChange(open)
+    setSearch("")
   }, [open])
 
+  const debouncedSearch = useCallback(debounce(async (searchTerm: string) => {
+    if (searchTerm != "") {
+      const docs = (await searchDocuments(searchTerm)).map((doc) => {
+        return {
+          id: doc.id,
+          type: SearchResultType.Notes,
+          title: doc.title,
+          icon: doc.icon
+        }
+      }) as SearchResult[]
+      setResults(docs)
+    } else {
+      setResults([])
+    }
+    setIsLoading(false)
+  }, 2000), [setResults])
+
   useEffect(() => {
-    console.log(search)
+    setIsLoading(true)
+    debouncedSearch(search)
+    // Use debounce
   }, [search])
 
-  const onCreateNewNote = () => {
-    console.log("Creating")
+  const onCreateNewNote = (withTitle = false) => {
     setIsLoading(true)
-    createDocument(search).then((doc: unknown) => {
+    let title = withTitle ? search : undefined
+    createDocument({
+      title
+    }).then((doc: unknown) => {
       let document = doc as Document
       navigator(`/documents/${document.id}`)
       setOpen(false)
@@ -75,6 +99,7 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
 
   const onSelect = (id: string) => {
     navigator(`/documents/${id}`)
+    setOpen(false)
   }
 
   return (
@@ -89,7 +114,7 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
           {
             search != "" && (
               <CommandGroup heading='Documents'>
-                {search != "" && (results.length > 0) ?
+                {results.length > 0 &&
                   results?.map(document => (
                     <CommandItem
                       key={document.id}
@@ -108,18 +133,17 @@ const GlobalSearch = ({ open: openProp, onOpenChange }: GlobalSearchProps) => {
                         {document.title}
                       </span>
                     </CommandItem>
-                  )) : (
-                    <CommandItem onSelect={onCreateNewNote} onClick={() => onCreateNewNote()}>
-                      {search} - Create New Note
-                    </CommandItem>
-                  )
+                  ))
                 }
-
+                <CommandItem onSelect={() => onCreateNewNote(true)} onClick={() => onCreateNewNote()}>
+                  <File />
+                  {search} - Create New Note
+                </CommandItem>
               </CommandGroup>
             )
           }
           <CommandGroup heading="Suggestions">
-            <CommandItem>
+            <CommandItem onSelect={() => onCreateNewNote()} onClick={() => onCreateNewNote()}>
               <PlusCircle />
               <span>New Note</span>
               <CommandShortcut>⌘N</CommandShortcut>

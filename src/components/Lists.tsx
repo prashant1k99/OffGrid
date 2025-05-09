@@ -24,7 +24,9 @@ const RenderList = ({ level, docs }: {
   }
 
   const createChild = (parentId: string) => {
-    createDocument(parentId)
+    createDocument({
+      parentId
+    })
       .then(childValue => {
         const child = childValue as PopulatedDocument;
         onExpand(parentId, true)

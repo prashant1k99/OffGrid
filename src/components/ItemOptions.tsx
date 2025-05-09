@@ -6,10 +6,11 @@ interface ItemProps {
   label: String;
   icon: LucideIcon;
   onClick: () => void;
-  shortcutKey?: string
+  shortcutKey?: string;
+  className?: string;
 }
 
-const ItemOption = ({ label, onClick, icon: Icon, shortcutKey }: ItemProps) => {
+const ItemOption = ({ label, onClick, icon: Icon, shortcutKey, className }: ItemProps) => {
   const getSearchText = platform() == "macos" ? "⌘" : "CTRL"
 
   return (
@@ -18,6 +19,7 @@ const ItemOption = ({ label, onClick, icon: Icon, shortcutKey }: ItemProps) => {
       onClick={onClick}
       className={cn(
         "flex items-center gap-2 hover:bg-primary/5 cursor-pointer p-0.5 px-2.5 select-none font-medium text-muted-foreground group/item transition-all ease-in-out duration-300",
+        className && className
       )}
     >
       <Icon className="w-4 h-4 text-muted-foreground" />

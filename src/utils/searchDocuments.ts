@@ -10,10 +10,9 @@ const searchDocuments = async (searchTerm: string, fromArchive = false) => {
         isArchived: fromArchive
       })
     })
-    toast.success("Successfully archived...")
     return docs as Document[]
   } catch (error) {
-    toast.error("Failed to archive document")
+    toast.error("Failed to search document")
     throw error
   }
 }

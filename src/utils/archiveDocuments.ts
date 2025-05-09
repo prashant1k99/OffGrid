@@ -1,4 +1,5 @@
 import { loadDocs } from "@/state/docs";
+import { loadTrash } from "@/state/trash";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ const archiveDocument = async (docId: string) => {
     })
     toast.success("Successfully archived...")
     await loadDocs()
+    await loadTrash()
     return
   } catch (error) {
     toast.error("Failed to archive document")
@@ -29,6 +31,7 @@ const restoreDocumnet = async (docId: string) => {
     })
     toast.success("Successfully restored notes...")
     await loadDocs()
+    await loadTrash()
     return
   } catch (error) {
     console.log(error)

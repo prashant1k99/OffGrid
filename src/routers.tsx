@@ -5,6 +5,7 @@ import {
 import MainLayout from "./layout/main";
 import Dashboard from "./pages/Dashboard";
 import Document from "./pages/Document";
+import ArchivedDocument from "./pages/ArchivedDocument";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "/documents/:docId",
         Component: Document
+      },
+      {
+        path: "/archived/:docId",
+        Component: ArchivedDocument
       },
       {
         path: "/data",
